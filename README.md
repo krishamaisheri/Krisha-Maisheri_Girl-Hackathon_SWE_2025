@@ -61,7 +61,7 @@ This project is a medical analysis system designed to assist in symptom diagnosi
 | POST   | `/api/upload`          | Upload medical images or reports  |
 
 ## Contributors
-- **Your Name** - Developer
+- **Your Name** - Krisha Maisheri
 
 ## License
 This project is licensed under the MIT License.
