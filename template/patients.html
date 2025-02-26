@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Patients - Medical Analysis System{% endblock %}
+{% block header_title %}Patient Management{% endblock %}
+
+{% block content %}
+<div class="card patients-card">
+    <div class="card-header">
+        <h3>Patients List</h3>
+        <div class="header-actions">
+            <div class="search-box">
+                <input type="text" id="patient-search" placeholder="Search patients...">
+                <i class="fas fa-search"></i>
+            </div>
+            <a href="{{ url_for('new_patient_form') }}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Add Patient
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table patients-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Contact</th>
+                        <th>Created Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="patients-list">
+                    {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                        <td>{{ patient.gender }}</td>
+                        <td>{{ patient.date_of_birth }}</td>
+                        <td>{{ patient.email if patient.email else patient.phone }}</td>
+                        <td>{{ patient.created_at }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{{ url_for('patient_detail', patient_id=patient.id) }}" class="btn btn-sm btn-info" title="View Profile">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{{ url_for('new_analysis_form', patient_id=patient.id) }}" class="btn btn-sm btn-primary" title="New Analysis">
+                                    <i class="fas fa-file-medical"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/patients.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis - {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+{% block header_title %}Analysis Details{% endblock %}
+
+{% block content %}
+<div class="analysis-details-page">
+    <div class="patient-banner">
+        <div class="patient-info">
+            <div class="patient-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="patient-data">
+                <h3>{{ patient.first_name }} {{ patient.last_name }}</h3>
+                <div class="patient-meta">
+                    <span>{{ patient.gender }}</span>
+                    <span>{{ patient.date_of_birth }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="banner-actions">
+            <a href="{{ url_for('patient_detail', patient_id=patient.id) }}" class="btn btn-outline">
+                <i class="fas fa-user"></i> Patient Profile
+            </a>
+            <a href="{{ url_for('new_analysis_form', patient_id=patient.id) }}" class="btn btn-primary">
+                <i class="fas fa-file-medical"></i> New Analysis
+            </a>
+        </div>
+    </div>
+    
+    <div class="analysis-container">
+        <div class="analysis-header">
+            <div class="analysis-meta">
+                <h2>
+                    {% if analysis.image_type %}
+                        {{ analysis.image_type|capitalize }} Scan Analysis
+                    {% else %}
+                        Medical Analysis
+                    {% endif %}
+                </h2>
+                <div class="timestamp">
+                    <i class="far fa-calendar-alt"></i> {{ analysis.created_at }}
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="print-analysis" class="btn btn-outline">
+                    <i class="fas fa-print"></i> Print
+                </button>
+                <button id="export-pdf" class="btn btn-info">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </button>
+            </div>
+        </div>
+        
+        <div class="analysis-content">
+            <div class="analysis-main">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Analysis Results</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if analysis.prediction %}
+                        <div class="results-row">
+                            <div class="prediction-section">
+                                <h4>Prediction</h4>
+                                <div class="prediction-result">{{ analysis.prediction }}</div>
+                            </div>
+                            
+                            <div class="confidence-section">
+                                <h4>Confidence</h4>
+                                <div class="confidence-chart-container">
+                                    <canvas id="confidenceChart" data-value="{{ analysis.confidence }}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="analysis-text">
+                            <h4>Analysis Report</h4>
+                            <div class="report-content">
+                                {{ analysis.analysis_text | nl2br }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-sidebar">
+                {% if analysis.image_path %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Medical Image</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="medical-image">
+                            <img src="{{ url_for('uploaded_file', filename=analysis.image_path) }}" alt="Medical Scan">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if analysis.report_path %}
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Medical Report</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if analysis.report_path.endswith('.pdf') %}
+                        <div class="pdf-preview">
+                            <a href="{{ url_for('uploaded_file', filename=analysis.report_path) }}" target="_blank" class="btn btn-outline btn-block">
+                                <i class="fas fa-file-pdf"></i> View PDF Report
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="report-image">
+                            <img src="{{ url_for('uploaded_file', filename=analysis.report_path) }}" alt="Medical Report">
+                        </div>
+                        {% endif %}
+                        
+                        {% if analysis.report_text %}
+                        <div class="extracted-text">
+                            <h4>Extracted Text</h4>
+                            <div class="text-content">
+                                {{ analysis.report_text }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analysis_detail.js') }}"></script>
+{% endblock %}

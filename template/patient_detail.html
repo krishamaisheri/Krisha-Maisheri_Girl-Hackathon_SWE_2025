@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}{{ patient.first_name }} {{ patient.last_name }} - Medical Analysis System{% endblock %}
+{% block header_title %}Patient Profile{% endblock %}
+
+{% block content %}
+<div class="patient-profile">
+    <div class="profile-header">
+        <div class="patient-info">
+            <div class="patient-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="patient-details">
+                <h2>{{ patient.first_name }} {{ patient.last_name }}</h2>
+                <div class="patient-meta">
+                    <span><i class="fas fa-venus-mars"></i> {{ patient.gender }}</span>
+                    <span><i class="fas fa-birthday-cake"></i> {{ patient.date_of_birth }}</span>
+                    {% if patient.email %}
+                    <span><i class="fas fa-envelope"></i> {{ patient.email }}</span>
+                    {% endif %}
+                    {% if patient.phone %}
+                    <span><i class="fas fa-phone"></i> {{ patient.phone }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="patient-actions">
+            <a href="{{ url_for('new_analysis_form', patient_id=patient.id) }}" class="btn btn-primary">
+                <i class="fas fa-file-medical"></i> New Analysis
+            </a>
+        </div>
+    </div>
+    
+    <div class="profile-content">
+        <div class="profile-sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Patient Information</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="patient-attributes">
+                        <li>
+                            <span class="attribute-label"><i class="fas fa-id-card"></i> Patient ID</span>
+                            <span class="attribute-value">{{ patient.id }}</span>
+                        </li>
+                        <li>
+                            <span class="attribute-label"><i class="fas fa-calendar-alt"></i> Registered</span>
+                            <span class="attribute-value">{{ patient.created_at }}</span>
+                        </li>
+                        {% if patient.address %}
+                        <li>
+                            <span class="attribute-label"><i class="fas fa-map-marker-alt"></i> Address</span>
+                            <span class="attribute-value">{{ patient.address }}</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3>Medical History</h3>
+                </div>
+                <div class="card-body">
+                    <div class="medical-history">
+                        {% if patient.medical_history %}
+                            {{ patient.medical_history | nl2br }}
+                        {% else %}
+                            <p class="no-data">No medical history recorded.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="analyses-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Analysis History</h3>
+                </div>
+                <div class="card-body">
+                    {% if analyses %}
+                    <div class="analysis-timeline">
+                        {% for analysis in analyses %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                {% if analysis.image_type == 'brain' %}
+                                <i class="fas fa-brain"></i>
+                                {% elif analysis.image_type == 'chest' %}
+                                <i class="fas fa-lungs"></i>
+                                {% else %}
+                                <i class="fas fa-file-medical-alt"></i>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <h4>{{ analysis.image_type|capitalize if analysis.image_type else 'Medical' }} Analysis</h4>
+                                <div class="timestamp">{{ analysis.created_at }}</div>
+                                
+                                <div class="analysis-details">
+                                    {% if analysis.prediction %}
+                                    <div class="prediction-result">
+                                        <div class="prediction-label">
+                                            <span>Prediction:</span> {{ analysis.prediction }}
+                                        </div>
+                                        
+                                        <div class="confidence-meter">
+                                            <div class="confidence-circle" data-value="{{ analysis.confidence }}">
+                                                <span class="confidence-text">{{ "%.1f"|format(analysis.confidence) }}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="analysis-actions">
+                                        <a href="{{ url_for('analysis_detail', analysis_id=analysis.id) }}" class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i> View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="no-analyses">
+                        <div class="no-data-icon">
+                            <i class="fas fa-file-medical-alt"></i>
+                        </div>
+                        <p>No analyses have been performed yet.</p>
+                        <a href="{{ url_for('new_analysis_form', patient_id=patient.id) }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Perform New Analysis
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/patient_detail.js') }}"></script>
+{% endblock %}

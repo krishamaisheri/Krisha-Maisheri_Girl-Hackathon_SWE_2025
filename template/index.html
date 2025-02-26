@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Medical Analysis System{% endblock %}
+{% block header_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Total Patients</h3>
+                <p id="patient-count">Loading...</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-file-medical-alt"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Total Analyses</h3>
+                <p id="analysis-count">Loading...</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Brain Scans</h3>
+                <p id="brain-count">Loading...</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-lungs"></i>
+            </div>
+            <div class="stat-info">
+                <h3>Chest Scans</h3>
+                <p id="chest-count">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-row">
+        <div class="card recent-patients">
+            <div class="card-header">
+                <h3>Recent Patients</h3>
+                <a href="{{ url_for('patient_list') }}" class="btn btn-link">View All</a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Date of Birth</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-patients-list">
+                            <tr>
+                                <td colspan="4" class="text-center">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card analysis-distribution">
+            <div class="card-header">
+                <h3>Analysis Distribution</h3>
+            </div>
+            <div class="card-body chart-container">
+                <canvas id="analysisChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-row">
+        <div class="card predictions-accuracy">
+            <div class="card-header">
+                <h3>Prediction Confidence</h3>
+            </div>
+            <div class="card-body chart-container">
+                <canvas id="confidenceChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="card quick-actions">
+            <div class="card-header">
+                <h3>Quick Actions</h3>
+            </div>
+            <div class="card-body">
+                <div class="action-buttons">
+                    <a href="{{ url_for('new_patient_form') }}" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Add New Patient
+                    </a>
+                    <button class="btn btn-secondary" id="export-data">
+                        <i class="fas fa-file-export"></i> Export Data
+                    </button>
+                    <button class="btn btn-info" id="refresh-dashboard">
+                        <i class="fas fa-sync-alt"></i> Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

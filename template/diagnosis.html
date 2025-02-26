@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Diagnosis - Medical Analysis System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <style>
+        /* Diagnosis-specific styles */
+        .symptom-form {
+            margin-bottom: 1.5rem;
+        }
+        
+        .symptom-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            margin-bottom: 1rem;
+        }
+        
+        .disease-suggestions {
+            margin-top: 1.5rem;
+        }
+        
+        .disease-card {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .disease-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .disease-card.selected {
+            border-color: #007bff;
+            background-color: rgba(0,123,255,0.05);
+        }
+        
+        .disease-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .disease-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+        }
+        
+        .confidence-badge {
+            background-color: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .precautions-list {
+            margin-top: 0.75rem;
+            padding-left: 1.5rem;
+        }
+        
+        .ai-analysis {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-left: 4px solid #007bff;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .confirmation-panel {
+            margin-top: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .diagnosis-history {
+            margin-top: 2rem;
+        }
+        
+        .history-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1rem;
+        }
+        
+        .history-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .history-disease {
+            font-weight: 600;
+            margin: 0.5rem 0;
+        }
+        
+        .history-symptoms {
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        
+        .status-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .status-approved {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    {% extends "base.html" %}
+    
+    {% block title %}Symptom Diagnosis - {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+    {% block header_title %}Symptom Diagnosis{% endblock %}
+    
+    {% block content %}
+    <div class="diagnosis-container">
+        <div class="card">
+            <div class="card-header">
+                <h3>
+                    <i class="fas fa-stethoscope"></i> 
+                    Symptom Diagnosis for {{ patient.first_name }} {{ patient.last_name }}
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="symptom-form">
+                    <form id="diagnosisForm">
+                        <input type="hidden" id="patientId" value="{{ patient.id }}">
+                        <div class="form-group">
+                            <label for="symptoms">Describe Symptoms:</label>
+                            <textarea id="symptoms" class="symptom-textarea" placeholder="Enter patient symptoms here. Be as detailed as possible for better diagnosis..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search-plus"></i> Analyze Symptoms
+                        </button>
+                    </form>
+                </div>
+                
+                <div id="loadingIndicator" class="text-center hidden">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p>Analyzing symptoms...</p>
+                </div>
+                
+                <div id="diagnosisResults" class="hidden">
+                    <div class="disease-suggestions">
+                        <h4><i class="fas fa-clipboard-list"></i> Potential Diagnoses</h4>
+                        <div id="suggestions-container"></div>
+                    </div>
+                    
+                    <div class="ai-analysis">
+                        <h4><i class="fas fa-robot"></i> AI Analysis</h4>
+                        <div id="ai-notes"></div>
+                    </div>
+                    
+                    <div class="confirmation-panel">
+                        <h4><i class="fas fa-check-circle"></i> Confirm Diagnosis</h4>
+                        <div class="form-group">
+                            <label for="doctorNotes">Doctor's Notes:</label>
+                            <textarea id="doctorNotes" class="symptom-textarea" placeholder="Add your professional notes about this diagnosis..."></textarea>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="newDiseaseCheck">
+                            <label class="form-check-label" for="newDiseaseCheck">
+                                Add as new disease not in database
+                            </label>
+                        </div>
+                        
+                        <div id="newDiseaseForm" class="hidden">
+                            <div class="form-group">
+                                <label for="newDiseaseName">Disease Name:</label>
+                                <input type="text" id="newDiseaseName" class="form-control" placeholder="Enter disease name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Precautions:</label>
+                                <div id="precautions-list">
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control precaution-input" placeholder="Precaution 1">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary remove-precaution" type="button">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" id="addPrecaution" class="btn btn-sm btn-outline-primary mt-2">
+                                    <i class="fas fa-plus"></i> Add Precaution
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button id="confirmDiagnosis" class="btn btn-success">
+                            <i class="fas fa-check"></i> Confirm Diagnosis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card diagnosis-history">
+            <div class="card-header">
+                <h3><i class="fas fa-history"></i> Diagnosis History</h3>
+            </div>
+            <div class="card-body">
+                <div id="history-container">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading diagnosis history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    
+    {% block extra_js %}
+    <script src="{{ url_for('static', filename='js/diagnosis.js') }}"></script>
+    {% endblock %}
+</body>
+</html>

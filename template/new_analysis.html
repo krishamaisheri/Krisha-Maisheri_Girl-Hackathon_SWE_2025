@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}New Analysis - {{ patient.first_name }} {{ patient.last_name }}{% endblock %}
+{% block header_title %}New Analysis{% endblock %}
+
+{% block content %}
+<div class="analysis-form-container">
+    <div class="patient-summary">
+        <div class="patient-avatar">
+            <i class="fas fa-user-circle"></i>
+        </div>
+        <div class="patient-info">
+            <h3>{{ patient.first_name }} {{ patient.last_name }}</h3>
+            <div class="patient-meta">
+                <span>{{ patient.gender }}</span>
+                <span>{{ patient.date_of_birth }}</span>
+            </div>
+        </div>
+        <a href="{{ url_for('patient_detail', patient_id=patient.id) }}" class="btn btn-outline">
+            <i class="fas fa-user"></i> Patient Profile
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3>New Medical Analysis</h3>
+        </div>
+        <div class="card-body">
+            <form id="analysis-form" class="form-container" enctype="multipart/form-data">
+                <input type="hidden" name="patient_id" value="{{ patient.id }}">
+                
+                <div class="form-group">
+                    <label for="image_type">Analysis Type <span class="required">*</span></label>
+                    <select id="image_type" name="image_type" required>
+                        <option value="">Select Analysis Type</option>
+                        <option value="brain">Brain Scan</option>
+                        <option value="chest">Chest Scan</option>
+                    </select>
+                </div>
+                
+                <div class="form-group file-upload">
+                    <label>Medical Image</label>
+                    <div class="file-upload-container" id="image-upload">
+                        <input type="file" id="image_file" name="image_file" accept=".png,.jpg,.jpeg,.gif,.bmp">
+                        <div class="upload-placeholder">
+                            <i class="fas fa-file-image"></i>
+                            <span>Drag & drop or click to upload scan image</span>
+                            <small>Supported formats: JPG, PNG, BMP, GIF</small>
+                        </div>
+                        <div class="file-preview" id="image-preview"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group file-upload">
+                    <label>Medical Report (Optional)</label>
+                    <div class="file-upload-container" id="report-upload">
+                        <input type="file" id="report_file" name="report_file" accept=".pdf,.png,.jpg,.jpeg,.bmp">
+                        <div class="upload-placeholder">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Drag & drop or click to upload medical report</span>
+                            <small>Supported formats: PDF, JPG, PNG, BMP</small>
+                        </div>
+                        <div class="file-preview" id="report-preview"></div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="analyze-btn">
+                        <i class="fas fa-microscope"></i> Run Analysis
+                        <span class="spinner"></span>
+                    </button>
+                    <a href="{{ url_for('patient_detail', patient_id=patient.id) }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+            
+            <div id="analysis-results" class="analysis-results">
+                <div class="analysis-loading">
+                    <div class="spinner-container">
+                        <div class="spinner-ring"></div>
+                    </div>
+                    <p>Processing analysis, please wait...</p>
+                </div>
+                
+                <div class="analysis-content" style="display: none;">
+                    <div class="results-header">
+                        <h3>Analysis Results</h3>
+                        <div class="results-actions">
+                            <button id="print-results" class="btn btn-outline">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <a id="view-details-btn" href="#" class="btn btn-info">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="results-summary">
+                        <div class="prediction-card">
+                            <h4>Prediction</h4>
+                            <div class="prediction-value" id="prediction-value">-</div>
+                        </div>
+                        
+                        <div class="confidence-card">
+                            <h4>Confidence</h4>
+                            <div class="confidence-display">
+                                <div class="circular-progress" id="confidence-meter">
+                                    <div class="inner-circle">
+                                        <span id="confidence-value">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-text">
+                        <h4>Analysis Report</h4>
+                        <div id="analysis-report" class="report-text"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/new_analysis.js') }}"></script>
+{% endblock %}
