@@ -3,17 +3,20 @@
 # Medical Analysis System
 
 ## Overview
-This project is a medical analysis system designed to assist in symptom diagnosis and pneumonia detection using machine learning. The system consists of a Flask-based backend, a pneumonia analysis model, and database management for patient records.
+This project is a comprehensive medical analysis system designed to assist in diagnosing various diseases, including pneumonia and brain tumors. By analyzing patients' medical reports and test results, the system aims to provide early detection and insights. It consists of a Flask-based backend, multiple machine learning models, and a database management system for handling patient records efficiently.
 
 ## Features
-- **Symptom Analysis API**: Uses OpenAI, FAISS, and sentence transformers to analyze medical symptoms.
-- **Pneumonia Detection**: A Jupyter notebook for pneumonia detection using machine learning models.
-- **Medical Record Management**: A Flask-based system to handle patient records, medical reports, and image processing.
+- **Disease Diagnosis API**: Leverages OpenAI, FAISS, and sentence transformers to analyze medical data and provide potential diagnoses.
+- **Pneumonia Detection**: A Jupyter notebook implementing machine learning models to detect pneumonia from medical images.
+- **Brain Tumor Detection**: A deep learning model for detecting brain tumors from MRI scans.
+- **Medical Record Management**: A Flask-based system to store and manage patient records, including medical reports and diagnostic images.
+- **Secure File Upload**: Allows users to upload medical images and reports for automated analysis.
 
 ## Project Structure
 ```
-├── symptoms_backend.py   # Backend API for symptom analysis
+├── symptoms_backend.py   # Backend API for disease diagnosis
 ├── pneumonia.ipynb       # Jupyter notebook for pneumonia detection
+├── brain_tumor_model.py  # Machine learning model for brain tumor detection
 ├── main.py               # Main backend for medical analysis system
 ├── requirements.txt      # Dependencies required for the project
 ├── uploads/              # Directory for storing uploaded images and reports
@@ -49,20 +52,17 @@ This project is a medical analysis system designed to assist in symptom diagnosi
    ```
 
 ## Usage
-- Access the symptom analysis API at `http://localhost:5000/api/symptoms`
-- Use the pneumonia detection notebook to analyze medical images
-- Upload medical reports and patient records via the web interface
+- Access the disease diagnosis API at `http://localhost:5000/api/diseases`
+- Utilize the pneumonia detection notebook to analyze medical images
+- Upload medical reports and patient records via the web interface for automated analysis
 
 ## API Endpoints
 | Method | Endpoint               | Description                        |
 |--------|------------------------|------------------------------------|
-| POST   | `/api/symptoms`        | Analyze symptoms for diagnosis    |
+| POST   | `/api/diseases`        | Analyze medical data for diagnosis |
 | GET    | `/api/patients`        | Retrieve all patient records      |
 | POST   | `/api/upload`          | Upload medical images or reports  |
+| GET    | `/api/brain_tumor`     | Detect brain tumors from MRI scans |
 
 ## Contributors
-- **Your Name** - Krisha Maisheri
-
-## License
-This project is licensed under the MIT License.
-
+- **Krisha Maisheri** - Developer & Project Lead
