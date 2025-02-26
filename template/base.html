@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Medical Analysis System{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-heartbeat"></i> MedAnalysis</h3>
+            </div>
+            <ul class="menu">
+                <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('patient_list') }}"><i class="fas fa-users"></i> Patients</a></li>
+                <li><a href="{{ url_for('new_patient_form') }}"><i class="fas fa-user-plus"></i> Add Patient</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <p>© 2025 MedAnalysis</p>
+            </div>
+        </nav>
+        
+        <div class="main-content">
+            <header>
+                <div class="header-left">
+                    <button id="toggle-sidebar" class="toggle-btn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2>{% block header_title %}Medical Analysis System{% endblock %}</h2>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-user-md"></i>
+                    <span>Doctor</span>
+                </div>
+            </header>
+            
+            <div class="content">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                                <span class="close-btn">&times;</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
